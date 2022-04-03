@@ -1,10 +1,13 @@
 package com.salimahafirassou.paymybuddy.service;
 
-import com.salimahafirassou.paymybuddy.domain.User;
+import com.salimahafirassou.paymybuddy.dto.UserDto;
+import com.salimahafirassou.paymybuddy.dto.UserLoginDto;
+import com.salimahafirassou.paymybuddy.exception.UserAlreadyExistException;
+import com.salimahafirassou.paymybuddy.exception.UserDoesNotExistsException;
 
 public interface UserService {
-		
-	public void loginUser(String email, String passWord);
-	public void createUserAccount(User user);
-	public void getMyProfilUser(Long id);  // accès profil pour modif ou consultation
+
+    void register(final UserDto user) throws UserAlreadyExistException;
+    boolean login(final UserLoginDto user) throws UserDoesNotExistsException;
+    boolean checkIfUserExist(final String email);
 }

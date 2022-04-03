@@ -1,6 +1,6 @@
 package com.salimahafirassou.paymybuddy.domain;
 
-import static javax.persistence.GenerationType.SEQUENCE;
+import static javax.persistence.GenerationType.AUTO;
 
 import java.util.Set;
 
@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -23,11 +24,13 @@ import javax.persistence.UniqueConstraint;
 		@UniqueConstraint(name = "user_unique", columnNames = {"email"})
 	}
 )
-public class User {
+public class UserEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id", columnDefinition = "serial")
+    @GeneratedValue(
+            strategy = AUTO
+    )
+	@Column(name="id")
 	private Long id;
 	
 	@Column(name="firstName")
@@ -39,27 +42,31 @@ public class User {
 	@Column(name="email")
 	private String email;
 	
-	@Column(name="passWord")
-	private String passWord;
+	@Column(name="password")
+	private String password;
 	
-	@Column(name="banckAccount")
+	/*@Column(name="bankAccount")
 	private String banckAccount;
 	
 	@Column(name="balance")
-	private Float balance;
+	private Float balance;*/
 	
-	@ManyToMany()
-	@JoinTable(name = "joinusers",
-				joinColumns=@JoinColumn(
-						name = "id"))
-	private Set<User> buddies;
-	
-		
-	public Float getBalance() {
-		return balance;
+	public UserEntity() {
 	}
-	public void setBalance(Float balance) {
-		this.balance = balance;
+	
+	public UserEntity(Long id, String firstName, String lastName, String email, String password) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+	}
+	
+	public UserEntity(String firstName, String lastName, String email, String password) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
 	}
 	public Long getId() {
 		return id;
@@ -85,25 +92,24 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPassWord() {
-		return passWord;
+	public String getPassword() {
+		return password;
 	}
-	public void setPassWord(String passWord) {
-		this.passWord = passWord;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	public String getBanckAccount() {
+	/*public String getBanckAccount() {
 		return banckAccount;
 	}
 	public void setBanckAccount(String banckAccount) {
 		this.banckAccount = banckAccount;
 	}
-	public Set<User> getBuddies() {
-		// TODO Auto-generated method stub
-		return null;
+	public Float getBalance() {
+		return balance;
 	}
-	public void setBuddies(Set<User> buddies) {
-		this.buddies = buddies;
-	}
+	public void setBalance(Float balance) {
+		this.balance = balance;
+	}*/
 	
 
 }
