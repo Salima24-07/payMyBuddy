@@ -8,16 +8,18 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import com.salimahafirassou.paymybuddy.domain.UserEntity;
+import com.salimahafirassou.paymybuddy.dto.ProfileDto;
 import com.salimahafirassou.paymybuddy.dto.UserDto;
 import com.salimahafirassou.paymybuddy.dto.UserLoginDto;
+import com.salimahafirassou.paymybuddy.exception.PasswordDoesNotMatchException;
 import com.salimahafirassou.paymybuddy.exception.UserAlreadyExistException;
 import com.salimahafirassou.paymybuddy.exception.UserDoesNotExistsException;
+import com.salimahafirassou.paymybuddy.exception.WrongPassworException;
 import com.salimahafirassou.paymybuddy.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
-	
-	private static final String Optional = null;
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -25,11 +27,14 @@ public class UserServiceImpl implements UserService {
     // private PasswordEncoder passwordEncoder;
 
     @Override
-    public void register(UserDto user) throws UserAlreadyExistException {
+    public void register(UserDto user) throws UserAlreadyExistException, PasswordDoesNotMatchException {
 
         //Let's check if user already registered with us
         if(checkIfUserExist(user.getEmail())){
             throw new UserAlreadyExistException("User already exists for this email");
+        }
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            throw new PasswordDoesNotMatchException("password does not match");
         }
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(user, userEntity);
@@ -44,14 +49,89 @@ public class UserServiceImpl implements UserService {
         if (existing_user.isEmpty()) {
             throw new UserDoesNotExistsException("User does not exist");
         }
+        UserEntity loginUser = existing_user.get();
 
-        return existing_user.get().getPassword() == user.getPassword();
+        if (loginUser.getPassword().equals(user.getPassword())) {
+            loginUser.setConnected(true);
+            userRepository.save(loginUser);
+            return true;
+        }
+        return false;
     }
 
 
     @Override
     public boolean checkIfUserExist(String email) {
         return userRepository.findUserByEmail(email).isPresent();
+    }
+
+    @Override
+    public boolean checkConnected(String email) throws UserDoesNotExistsException {
+        Optional<UserEntity> existing_user = userRepository.findUserByEmail(email);
+        if (existing_user.isEmpty()) {
+            throw new UserDoesNotExistsException("User does not exist");
+        }
+        return existing_user.get().getConnected();
+    }
+
+    @Override
+    public void logout(String email) throws UserDoesNotExistsException {
+        
+        Optional<UserEntity> existing_user = userRepository.findUserByEmail(email);
+        if (existing_user.isEmpty()) {
+            throw new UserDoesNotExistsException("User does not exist");
+        }
+        UserEntity loggedinUser = existing_user.get();
+
+        loggedinUser.setConnected(false);
+        userRepository.save(loggedinUser);
+        
+    }
+
+    @Override
+    public void update(ProfileDto profileDto) 
+        throws PasswordDoesNotMatchException, UserDoesNotExistsException, WrongPassworException {
+        
+        Optional<UserEntity> existing_user = userRepository.findUserByEmail(profileDto.getEmail());
+        if (existing_user.isEmpty()) {
+            throw new UserDoesNotExistsException("User does not exist");
+        }
+        UserEntity userEntity = existing_user.get();
+
+        System.out.println(profileDto.getOldPassword());
+        
+        if (profileDto.getOldPassword() != null && profileDto.getOldPassword() != "") {
+            
+            if (!userEntity.getPassword().equals(profileDto.getOldPassword())) {
+                throw new WrongPassworException("wrong password");
+            }
+            if (!profileDto.getNewPassword().equals(profileDto.getConfirmPassword())){
+                throw new PasswordDoesNotMatchException("password does not match");
+            }
+            userEntity.setPassword(profileDto.getNewPassword());
+        }
+        
+        userEntity.setFirstName(profileDto.getFirstName());
+        userEntity.setLastName(profileDto.getLastName());
+        
+        userRepository.save(userEntity);
+        
+    }
+
+    @Override
+    public ProfileDto getUserByEmail(String email) throws UserDoesNotExistsException {
+        
+        Optional<UserEntity> existing_user = userRepository.findUserByEmail(email);
+        if (existing_user.isEmpty()) {
+            throw new UserDoesNotExistsException("User does not exist");
+        }
+        UserEntity loggedinUser = existing_user.get();
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setFirstName(loggedinUser.getFirstName());
+        profileDto.setLastName(loggedinUser.getLastName());
+        profileDto.setEmail(loggedinUser.getEmail());
+        profileDto.setBalance(loggedinUser.getBalance());
+        return profileDto;
     }
 
     // private void encodePassword( UserEntity userEntity, UserDto user){
