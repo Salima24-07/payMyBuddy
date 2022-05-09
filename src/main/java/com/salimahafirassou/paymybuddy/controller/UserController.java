@@ -21,6 +21,7 @@ import com.salimahafirassou.paymybuddy.dto.UserLoginDto;
 import com.salimahafirassou.paymybuddy.exception.PasswordDoesNotMatchException;
 import com.salimahafirassou.paymybuddy.exception.UserAlreadyExistException;
 import com.salimahafirassou.paymybuddy.exception.UserDoesNotExistsException;
+import com.salimahafirassou.paymybuddy.exception.UserNameAlreadyInUseException;
 import com.salimahafirassou.paymybuddy.exception.WrongPassworException;
 import com.salimahafirassou.paymybuddy.service.UserService;
 
@@ -45,11 +46,15 @@ public class UserController {
         try {
             userService.register(userDto);
         }catch (PasswordDoesNotMatchException e){
-            bindingResult.rejectValue("confirmPassword", "userDto.confirmPassword", "password does not match");
+            bindingResult.rejectValue("confirmPassword", "userDto.confirmPassword", e.getMessage());
             model.addAttribute("profileDto", userDto);
             return "account/register";
         }catch (UserAlreadyExistException e){
-            bindingResult.rejectValue("email", "userDto.email","An account already exists for this email.");
+            bindingResult.rejectValue("email", "userDto.email",e.getMessage());
+            model.addAttribute("userDto", userDto);
+            return "account/register";
+        }catch (UserNameAlreadyInUseException e){
+            bindingResult.rejectValue("userName", "userDto.userName",e.getMessage());
             model.addAttribute("userDto", userDto);
             return "account/register";
         }
@@ -64,7 +69,8 @@ public class UserController {
 
     @PostMapping("/login")
     public String userLogin(final UserLoginDto userLoginDto, final BindingResult bindingResult, final Model model,
-                    HttpServletResponse response){
+                    HttpServletResponse response) throws Exception{
+
         if(bindingResult.hasErrors()){
             model.addAttribute("loginForm", userLoginDto);
             return "account/login";

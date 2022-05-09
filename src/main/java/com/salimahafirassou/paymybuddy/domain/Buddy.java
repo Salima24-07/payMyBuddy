@@ -45,6 +45,14 @@ public class Buddy {
     )
 	private UserEntity buddy;
 
+    public Buddy() {
+    }
+
+    public Buddy(UserEntity user, UserEntity buddy) {
+        this.user = user;
+        this.buddy = buddy;
+    }
+
     public Long getId() {
         return id;
     }

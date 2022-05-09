@@ -2,9 +2,9 @@ package com.salimahafirassou.paymybuddy.dto;
 
 import java.io.Serializable;
 
-public class ConnectionDto implements Serializable {
+public class ConnectionDto{
 
-    private String buddy_email;
+	private String buddy_email;
 
     public String getBuddy_email() {
         return buddy_email;
@@ -13,5 +13,4 @@ public class ConnectionDto implements Serializable {
     public void setBuddy_email(String buddy_email) {
         this.buddy_email = buddy_email;
     }
-    
 }
