@@ -34,7 +34,7 @@ public class UserServiceTests {
     @Test
     public void testCreateUserOK() throws Exception {
 
-        UserDto userDto =new UserDto("test", "test", "create_user_ok@test.com", "0000", "0000", "userName1");
+        UserDto userDto =new UserDto("test", "test", "create_user_ok@test.com", "0000", "0000");
 
         userService.register(userDto);
 
@@ -53,7 +53,7 @@ public class UserServiceTests {
 
         userRepository.delete(admin);
 
-        UserDto userDto =new UserDto("test", "test", "test_admin@test.com", "0000", "0000", "admin");
+        UserDto userDto =new UserDto("test", "test", "test_admin@test.com", "0000", "0000");
 
         userService.register(userDto);
 
@@ -67,7 +67,7 @@ public class UserServiceTests {
 	@Test
     public void testCreateUserKOUserExists() throws Exception {
 
-        UserDto userDto =new UserDto("test", "test", "create_user_ko@test.com", "0000", "0000", "user_3");
+        UserDto userDto =new UserDto("test", "test", "create_user_ko@test.com", "0000", "0000");
 
 		assertThrows(UserAlreadyExistException.class, () -> userService.register(userDto));
 
@@ -76,7 +76,7 @@ public class UserServiceTests {
     @Test
     public void testCreateUserKOPasswordMatch() throws Exception {
 
-        UserDto userDto =new UserDto("test", "test", "create_user_ko_password_match@test.com", "0000", "1111", "userName2");
+        UserDto userDto =new UserDto("test", "test", "create_user_ko_password_match@test.com", "0000", "1111");
 
 		assertThrows(PasswordDoesNotMatchException.class, () -> userService.register(userDto));
 
@@ -85,7 +85,7 @@ public class UserServiceTests {
     @Test
     public void testCreateUserKOUserNameAlreadyInUse() throws Exception {
 
-        UserDto userDto =new UserDto("test", "test", "create_user_ko_user_name@test.com", "0000", "0000", "user_1");
+        UserDto userDto =new UserDto("test", "test", "create_user_ko_user_name@test.com", "0000", "0000");
 
 		assertThrows(UserNameAlreadyInUseException.class, () -> userService.register(userDto));
 
