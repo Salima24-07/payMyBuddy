@@ -19,13 +19,13 @@ public class UserDto implements Serializable {
     @NotNull
     @NotEmpty(message = "password can not be empty")
     private String password;
+
     private String confirmPassword;
     
     @NotNull
     @NotEmpty(message = "email can not be empty")
     @Email(message = "email not valid")
     private String email;
-	
 
 	public UserDto() {};
 
@@ -76,6 +76,5 @@ public class UserDto implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-    
     
 }

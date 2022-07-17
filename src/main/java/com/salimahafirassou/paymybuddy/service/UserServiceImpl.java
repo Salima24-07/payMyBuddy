@@ -31,26 +31,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(UserDto user) throws UserAlreadyExistException, PasswordDoesNotMatchException {
 
+        if(user.getEmail() == null || user.getEmail().trim().equals("")){
+            throw new UserAlreadyExistException("email null!");
+        }
+        if(user.getFirstName() == null || user.getEmail().trim().equals("")){
+            throw new UserAlreadyExistException("FirstName null!");
+        }
+        if(user.getLastName() == null || user.getEmail().trim().equals("")){
+            throw new UserAlreadyExistException("LastName null!");
+        }
+        if(user.getPassword() == null || user.getEmail().trim().equals("")){
+            throw new UserAlreadyExistException("PassWord null!");
+        }
         //Let's check if user already registered with us
         if(checkIfUserExist(user.getEmail())){
             throw new UserAlreadyExistException("User already exists for this email");
         }
-        if(user.getEmail().equals(null) || user.getEmail().trim().equals("")){
-            throw new UserAlreadyExistException("email null!");
-        }
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             throw new PasswordDoesNotMatchException("password does not match");
         }
-        if(user.getFirstName().equals(null) || user.getEmail().trim().equals("")){
-            throw new UserAlreadyExistException("FirstName null!");
-        }
-        if(user.getLastName().equals(null) || user.getEmail().trim().equals("")){
-            throw new UserAlreadyExistException("LastName null!");
-        }
-        if(user.getPassword().equals(null) || user.getEmail().trim().equals("")){
-            throw new UserAlreadyExistException("PassWord null!");
-        }
-        
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(user, userEntity);
         // encodePassword(userEntity, user);
@@ -147,6 +146,14 @@ public class UserServiceImpl implements UserService {
         return profileDto;
     }
 
+    @Override 
+    public Boolean checkAdmin(String email) throws UserDoesNotExistsException {
+        Optional<UserEntity> existing_user = userRepository.findUserByEmail(email);
+        if (existing_user.isEmpty()) {
+            throw new UserDoesNotExistsException("User does not exist");
+        }
+        return existing_user.get().getRole().equals("ADMIN");
+    }
     // private void encodePassword( UserEntity userEntity, UserDto user){
     //     userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
     // }

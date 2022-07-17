@@ -21,7 +21,6 @@ import com.salimahafirassou.paymybuddy.dto.UserLoginDto;
 import com.salimahafirassou.paymybuddy.exception.PasswordDoesNotMatchException;
 import com.salimahafirassou.paymybuddy.exception.UserAlreadyExistException;
 import com.salimahafirassou.paymybuddy.exception.UserDoesNotExistsException;
-import com.salimahafirassou.paymybuddy.exception.UserNameAlreadyInUseException;
 import com.salimahafirassou.paymybuddy.exception.WrongPassworException;
 import com.salimahafirassou.paymybuddy.service.UserService;
 
@@ -38,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String userRegistration(final @Valid  UserDto userDto, final BindingResult bindingResult, final Model model){
+    public String userRegistration(final @Valid UserDto userDto, final BindingResult bindingResult, final Model model){
         if(bindingResult.hasErrors()){
             model.addAttribute("userDto", userDto);
             return "account/register";
@@ -51,10 +50,6 @@ public class UserController {
             return "account/register";
         }catch (UserAlreadyExistException e){
             bindingResult.rejectValue("email", "userDto.email",e.getMessage());
-            model.addAttribute("userDto", userDto);
-            return "account/register";
-        }catch (UserNameAlreadyInUseException e){
-            bindingResult.rejectValue("userName", "userDto.userName",e.getMessage());
             model.addAttribute("userDto", userDto);
             return "account/register";
         }
@@ -88,7 +83,7 @@ public class UserController {
             model.addAttribute("userLoginDto", userLoginDto);
             return "account/login";
         }
-        return "redirect:/home";
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
@@ -144,7 +139,7 @@ public class UserController {
             model.addAttribute("profileDto", profileDto);
             return "account/profile";
         } catch (UserDoesNotExistsException e) {
-            return "redirect:/home";
+            return "redirect:/";
         }
     }
 

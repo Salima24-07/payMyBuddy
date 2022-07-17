@@ -52,6 +52,10 @@ public class BuddyController {
                 return "redirect:/login";
             }
 
+            if (userService.checkAdmin(user_token.get())) {
+                return "app/connection_admin";
+            }
+
             List<UserEntity> buddies = buddyService.listMyBudies(user_token.get());
             model.addAttribute("buddies", buddies);
             model.addAttribute("connectionDto", new ConnectionDto());
@@ -123,6 +127,12 @@ public class BuddyController {
             
             if (user_token.get().equals(connectionDto.getBuddy_email())) {
                 bindingResult.rejectValue("buddy_email", "connectionDto.buddy_email", "you cannot add yourself");
+                model.addAttribute("connectionDto", connectionDto);
+                model.addAttribute("buddies", buddies);
+                return "app/connection";
+            }
+            if (userService.checkAdmin(connectionDto.getBuddy_email())) {
+                bindingResult.rejectValue("buddy_email", "connectionDto.buddy_email", "you cannot add admin");
                 model.addAttribute("connectionDto", connectionDto);
                 model.addAttribute("buddies", buddies);
                 return "app/connection";
